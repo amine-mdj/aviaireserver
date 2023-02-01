@@ -13,6 +13,10 @@ const app = express()
 const ITEMS_PER_PAGE = 13
 connectDB()
 
+function altertable () {
+  
+}
+
 
 app.use(cors());
 app.use('/public', express.static('public'));
@@ -157,10 +161,57 @@ app.post('/oiseaux',upload.single("oiseauximg"), (req, res)=> {
 
 } )
 
-app.post('/oiseaux')
+
 
 
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
+})
+
+
+//  ------------------- admin routes  -------------------------------
+
+app.get('/canari', async (req, res) =>{
+  const count = await oiseaux.estimatedDocumentCount()
+  const allData2 = await oiseaux.find()
+  const allDatacvrt2 =  allData2.map((item) => {
+    return {
+      id:item._id,
+      b64: Buffer.from(item.img.data).toString('base64'),
+      title: item.title,
+      price: item.price,
+    }
+  })
+  
+  res.send(allDatacvrt2)
+})
+
+app.post('/canari',upload.single("oiseauximg"), (req,res) =>{
+  const oiseauximage =  oiseaux({
+    title: req.body.title,
+    price: req.body.price,
+    img: {
+      data: fs.readFileSync("uploads/" + req.file.filename),
+      contentType: "image/png",
+    },
+  });
+
+  oiseauximage
+  .save()
+  .then((res) => {
+    console.log("image is saved");
+  })
+  .catch((err) => {
+    console.log(err, "error has occur");
+  });
+  res.send('image is saved')
+})
+
+app.put('/canari/:id', (req, res) =>{
+  
+})
+
+app.delete('/canari/:id', (req, res) =>{
+
 })
