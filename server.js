@@ -208,8 +208,30 @@ app.post('/canari',upload.single("oiseauximg"), (req,res) =>{
   res.send('image is saved')
 })
 
-app.put('/canari/:id', (req, res) =>{
+app.put('/canari/:id',upload.single("oiseauximg"), async(req, res) =>{
   
+		const canari = await oiseaux.findByIdAndUpdate(
+			req.params.id,
+			{
+				$set: {
+          title: req.body.title,
+          price: req.body.price,
+          img: {
+            data: fs.readFileSync("uploads/" + req.file.filename),
+            contentType: "image/png",
+          
+			}
+    }
+  },
+			{
+				new: true,
+				runValidators: true,
+			}
+    
+		)
+
+		res.status(200).json({ canari })
+	
 })
 
 app.delete('/canari/:id', (req, res) =>{
