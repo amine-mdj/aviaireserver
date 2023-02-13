@@ -6,6 +6,7 @@ const multer = require("multer");
 const bcrypt = require('bcrypt');
 const fs = require("fs"); 
 const oiseaux = require("./models/oiseaux");
+const article = require("./models/article");
 const User = require("./models/user");
 const { connectDB } = require('./configs/mongodb');
 const { title } = require('process');
@@ -236,4 +237,30 @@ app.put('/canari/:id',upload.single("oiseauximg"), async(req, res) =>{
 
 app.delete('/canari/:id', (req, res) =>{
 
+})
+
+app.post('/article', (req, res) =>{
+  const articles =  article({
+    title: req.body.title,
+    content: req.body.article,
+    });
+    articles.save()
+  .then((res) => {
+    console.log("article is saved");
+  })
+  .catch((err) => {
+    console.log(err, "error has occur");
+  });
+  res.send('image is saved')
+
+})
+
+app.get('/article', async (req, res) =>{
+  const artcl = await article.find()
+  res.send(artcl)
+})
+
+app.get('/1article/:id', async (req, res) =>{
+  const artcl = await article.findById(req.params.id).exec()
+  res.send(artcl)
 })
