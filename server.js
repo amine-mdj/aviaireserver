@@ -5,8 +5,10 @@ const cors = require("cors");
 const multer = require("multer");
 const bcrypt = require('bcrypt');
 const fs = require("fs"); 
+const jwt = require('jsonwebtoken')
 const oiseaux = require("./models/oiseaux");
 const article = require("./models/article");
+const materiels = require("./models/materiels");
 const User = require("./models/user");
 const { connectDB } = require('./configs/mongodb');
 const { title } = require('process');
@@ -51,6 +53,7 @@ app.post('/login', async (req,res)=>{
   }
   try {
     const user2 = await User.findOne({ email: email })
+    const accesstoken = jwt.sign({id: user2._id, role:user2.role}, process.env.ACCESS_TOKEN_SECRET )
     if (!user2) {
       res.status(400).json({
         message: "Login not successful",
@@ -62,7 +65,8 @@ app.post('/login', async (req,res)=>{
         result
           ? res.status(200).json({
               message: "Login successful",
-              user2: user2,
+              // user2: user2,
+              accesstoken: accesstoken
             })
           : res.status(400).json({ message: "Login not succesful" })
       })
@@ -131,6 +135,25 @@ app.get('/canarilist',  async (req,res)=>{
     res.send(body)
 })
 
+app.get('/materiels',  async (req,res)=>{
+  const page = req.query.page
+  const count = await materiels.estimatedDocumentCount()
+  const allData = await materiels.find().limit(ITEMS_PER_PAGE).skip(page*ITEMS_PER_PAGE)
+  const numberofpages = count / ITEMS_PER_PAGE
+  const allDatacvrt =  allData.map((item) => {
+    return {
+      b64: Buffer.from(item.img.data).toString('base64'),
+      title: item.title,
+      price: item.price,
+    }
+  });
+
+  const body = {allDatacvrt, numberofpages}
+  
+    
+  res.send(body)
+})
+
 app.get('/canarilistsearch', async (req, res)=>{
   const search = req.query.search
   
@@ -172,6 +195,8 @@ app.listen(port, () => {
 
 
 //  ------------------- admin routes  -------------------------------
+
+// --------------------- canari routes --------------------------------
 
 app.get('/canari', async (req, res) =>{
   const count = await oiseaux.estimatedDocumentCount()
@@ -263,4 +288,42 @@ app.get('/article', async (req, res) =>{
 app.get('/1article/:id', async (req, res) =>{
   const artcl = await article.findById(req.params.id).exec()
   res.send(artcl)
+})
+
+// ------------- materiels routes ---------------------
+
+app.post('/materiels',upload.single("matimg"), (req, res)=>{
+  const materielsimg =  materiels({
+    title: req.body.title,
+    price: req.body.price,
+    img: {
+      data: fs.readFileSync("uploads/" + req.file.filename),
+      contentType: "image/png",
+    },
+  });
+
+  materielsimg
+  .save()
+  .then((res) => {
+    console.log("materiel is saved");
+  })
+  .catch((err) => {
+    console.log(err, "error has occur");
+  });
+  res.send('materiel is saved')
+})
+
+app.get('/materials', async (req, res) =>{
+  const count = await materiels.estimatedDocumentCount()
+  const allData2 = await materiels.find()
+  const allDatacvrt2 =  allData2.map((item) => {
+    return {
+      id:item._id,
+      b64: Buffer.from(item.img.data).toString('base64'),
+      title: item.title,
+      price: item.price,
+    }
+  })
+  
+  res.send(allDatacvrt2)
 })
