@@ -10,6 +10,7 @@ const oiseaux = require("./models/oiseaux");
 const article = require("./models/article");
 const materiels = require("./models/materiels");
 const User = require("./models/user");
+const { protect } = require('./middleware/authMiddleware')
 const { connectDB } = require('./configs/mongodb');
 const { title } = require('process');
 const app = express()
@@ -213,7 +214,7 @@ app.get('/canari', async (req, res) =>{
   res.send(allDatacvrt2)
 })
 
-app.post('/canari',upload.single("oiseauximg"), (req,res) =>{
+app.post('/canari', protect ,upload.single("oiseauximg"), (req,res) =>{
   const oiseauximage =  oiseaux({
     title: req.body.title,
     price: req.body.price,
@@ -234,7 +235,7 @@ app.post('/canari',upload.single("oiseauximg"), (req,res) =>{
   res.send('image is saved')
 })
 
-app.put('/canari/:id',upload.single("oiseauximg"), async(req, res) =>{
+app.put('/canari/:id', protect ,upload.single("oiseauximg"), async(req, res) =>{
   
 		const canari = await oiseaux.findByIdAndUpdate(
 			req.params.id,
@@ -260,13 +261,13 @@ app.put('/canari/:id',upload.single("oiseauximg"), async(req, res) =>{
 	
 })
 
-app.delete('/canari/:id', (req, res) =>{
+app.delete('/canari/:id', protect , (req, res) =>{
   oiseaux.deleteOne({ _id: req.params.id });
 })
 
 // ----------------------- article routes --------------------------------------
 
-app.post('/article', (req, res) =>{
+app.post('/article',protect, (req, res) =>{
   const articles =  article({
     title: req.body.title,
     content: req.body.article,
@@ -294,7 +295,7 @@ app.get('/1article/:id', async (req, res) =>{
 
 // ------------- materiels routes ---------------------
 
-app.post('/materiels',upload.single("matimg"), (req, res)=>{
+app.post('/materiels', protect ,upload.single("matimg"), (req, res)=>{
   const materielsimg =  materiels({
     title: req.body.title,
     price: req.body.price,
@@ -330,7 +331,7 @@ app.get('/materials', async (req, res) =>{
   res.send(allDatacvrt2)
 })
 
-app.put('/material/:id',upload.single("matimg"), async(req, res) =>{
+app.put('/material/:id',protect,upload.single("matimg"), async(req, res) =>{
   
   const canari = await materiels.findByIdAndUpdate(
     req.params.id,
@@ -356,6 +357,6 @@ app.put('/material/:id',upload.single("matimg"), async(req, res) =>{
 
 })
 
-app.delete('/material/:id', (req, res) =>{
+app.delete('/material/:id',protect, (req, res) =>{
   materiels.deleteOne({ _id: req.params.id });
 })
