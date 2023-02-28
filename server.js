@@ -261,8 +261,10 @@ app.put('/canari/:id',upload.single("oiseauximg"), async(req, res) =>{
 })
 
 app.delete('/canari/:id', (req, res) =>{
-
+  oiseaux.deleteOne({ _id: req.params.id });
 })
+
+// ----------------------- article routes --------------------------------------
 
 app.post('/article', (req, res) =>{
   const articles =  article({
@@ -326,4 +328,34 @@ app.get('/materials', async (req, res) =>{
   })
   
   res.send(allDatacvrt2)
+})
+
+app.put('/material/:id',upload.single("matimg"), async(req, res) =>{
+  
+  const canari = await materiels.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: {
+        title: req.body.title,
+        price: req.body.price,
+        img: {
+          data: fs.readFileSync("uploads/" + req.file.filename),
+          contentType: "image/png",
+        
+    }
+  }
+},
+    {
+      new: true,
+      runValidators: true,
+    }
+  
+  )
+
+  res.status(200).json({ canari })
+
+})
+
+app.delete('/material/:id', (req, res) =>{
+  materiels.deleteOne({ _id: req.params.id });
 })
