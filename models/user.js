@@ -13,7 +13,10 @@ const UserSchema = Schema(
           enum:["user","admin"]
         }
       },
-      { collection: 'user' }
+      { collection: 'user',
+        strict: false,
+        strictQuery: false, }
+      
 )
 
 

@@ -15,13 +15,13 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage });
 
-router.get('/canari', getcanari)
+router.get('/', getcanari)
   
-router.post('/canari', protect ,upload.single("oiseauximg"), postcanari)
+router.post('/', protect ,upload.single("oiseauximg"), postcanari)
   
-router.put('/canari/:id', protect ,upload.single("oiseauximg"), updatecanari)
+router.put('/:id', protect ,upload.single("oiseauximg"), updatecanari)
   
-router.delete('/canari/:id', protect , deletecanari)
+router.delete('/:id', protect , deletecanari)
 
 module.exports = router
   

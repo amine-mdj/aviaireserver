@@ -63,7 +63,15 @@ const updatecanari = async(req,res) =>{
 
 
 const deletecanari = (req,res) =>{
-    oiseaux.deleteOne({ _id: req.params.id })
+    oiseaux.findByIdAndDelete(req.params.id,  function (err, docs) {
+      if (!err){
+          console.log( docs);
+      }
+      else{
+          console.log(err);
+      }
+   })
+    
 }
 
 

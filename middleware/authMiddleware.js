@@ -5,10 +5,11 @@ const protect = async (req, res, next) => {
  
     try {
       // Get token from header
-      token = req.headers.authorization.split(' ')[1]
+      token = JSON.parse(req.headers.authorization.split(' ')[1])
+      
 
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
 
       
        next()
