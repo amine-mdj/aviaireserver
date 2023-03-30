@@ -2,6 +2,18 @@ const User = require("../models/user");
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 
+const refresh = (req,res)=>{
+   const token = req.cookie.jwt;
+   const decoded = jwt.verify(token,process.env.REFRESH_TOKEN_SECRET)
+   if(decoded){
+    const accesstoken = jwt.sign(decoded,process.env.ACCESS_TOKEN_SECRET,{expiresIn: '30s'})
+    const refreshtoken = jwt.sign(decoded,process.env.REFRESH_TOKEN_SECRET,{expiresIn: '1d'})
+    res.cookie('jwt',refreshtoken)
+    res.json(accesstoken)
+
+   }
+}
+
 const login = async(req,res)=>{
     const email = req.body.email
     const password = req.body.password
@@ -13,7 +25,8 @@ const login = async(req,res)=>{
     }
     try {
       const user2 = await User.findOne({ email: email })
-      const accesstoken = jwt.sign({id: user2._id, role:user2.role}, process.env.ACCESS_TOKEN_SECRET )
+      const accesstoken = jwt.sign({id: user2._id, role:user2.role},process.env.ACCESS_TOKEN_SECRET,{expiresIn: '30s'} )
+      const refreshtoken = jwt.sign({id: user2._id, role:user2.role}, process.env.REFRESH_TOKEN_SECRET,{expiresIn: '1d'} )
       if (!user2) {
         res.status(400).json({
           message: "Login not successful",
@@ -22,13 +35,16 @@ const login = async(req,res)=>{
       } else {
         // comparing given password with hashed password
         bcrypt.compare(password, user2.password).then(function (result) {
-          result
-            ? res.status(200).json({
+          if (result)
+            {res.cookie('jwt',refreshtoken)
+              res.status(200).json({
                 message: "Login successful",
                 // user2: user2,
                 accesstoken: accesstoken
               })
-            : res.status(400).json({ message: "Login not succesful" })
+              }
+
+          else res.status(400).json({ message: "Login not succesful" })
         })
       }
     } catch (error) {
@@ -61,5 +77,6 @@ const register = async(req,res)=>{
 
 module.exports = {
     login,
-    register
+    register,
+    refresh
 }

@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage });
 
-router.get('/', getcanari)
+router.get('/',protect, getcanari)
   
 router.post('/', protect ,upload.single("oiseauximg"), postcanari)
   

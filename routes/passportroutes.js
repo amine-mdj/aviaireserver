@@ -22,23 +22,14 @@ router.get("/login/failed", (req, res) => {
 	});
 });
 
-router.get("/testoauth2server", (req, res) => {
-	if (req.user) {
-		res.status(200).json({
-			error: false,
-			message: "Successfully Loged In",
-			user: req.user,
-            cookies: req.cookies
-		});
-	} else {
-		res.status(403).json({ error: true, message: "Not Authorized" });
-	}
-});
+
+
+
 
 router.get("/google", passport.authenticate("google", ["profile", "email"]));
 
 router.get("/google/callback",passport.authenticate("google", {
-		successRedirect: 'http://localhost:3000/testoauth1',
+		successRedirect: process.env.CLIENT_URL,
 		failureRedirect: "/login/failed",
 	})
 );
