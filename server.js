@@ -28,7 +28,7 @@ app.use(passport.session());
 app.use(cookieParser());
 
 app.use(cors({
-  origin: "https://aviaire-api.onrender.com",
+  origin: "https://aviaire.onrender.com",
   methods: "GET,POST,PUT,DELETE",
   credentials: true,
 }));
