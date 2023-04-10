@@ -65,13 +65,14 @@ const forgotpassword = async(req, res) =>{
 
 
 const refresh = (req,res)=>{
-   console.log('reached')
+   console.log('reached---------------')
    const token = req.cookies.jwt;
+   console.log(token)
    const decoded = jwt.verify(token,process.env.REFRESH_TOKEN_SECRET)
    if(decoded){
     const accesstoken = jwt.sign({id:decoded.id,role:decoded.role},process.env.ACCESS_TOKEN_SECRET,{expiresIn: '30s'},)
     const refreshtoken = jwt.sign({id:decoded.id,role:decoded.role},process.env.REFRESH_TOKEN_SECRET,{expiresIn: '1d'})
-    res.cookie('jwt',refreshtoken, { httpOnly:true,domain:'aviaire.onrender.com', sameSite:false, secure:true, maxAge:1000 * 60 * 60 * 24 })
+    res.cookie('jwt',refreshtoken, { httpOnly:true, sameSite:false,secure:true, maxAge:1000 * 60 * 60 * 24 })
     res.json({accesstoken:accesstoken})
 
    }
@@ -99,7 +100,7 @@ const login = async(req,res)=>{
         // comparing given password with hashed password
         bcrypt.compare(password, user2.password).then(function (result) {
           if (result)
-            {res.cookie('jwt',refreshtoken, { httpOnly:true,domain:'aviaire.onrender.com', sameSite:false, secure:true, maxAge:1000 * 60 * 60 * 24 })
+            {res.cookie('jwt',refreshtoken, { httpOnly:true,secure:true, sameSite:false, maxAge:1000 * 60 * 60 * 24 })
               res.status(200).json({
                 message: "Login successful",
                 // user2: user2,
