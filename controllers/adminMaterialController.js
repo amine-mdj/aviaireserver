@@ -63,7 +63,14 @@ const updateMaterials = async(req, res) =>{
 }
 
 const deleteMaterials = (req, res) =>{
-    materiels.deleteOne({ _id: req.params.id })
+    materiels.findByIdAndDelete(req.params.id,  function (err, docs) {
+      if (!err){
+          console.log( docs);
+      }
+      else{
+          console.log(err);
+      }
+   })
 }
 
 
