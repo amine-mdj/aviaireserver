@@ -4,7 +4,7 @@ const port = 8000
 const cors = require("cors");
 const passport = require("passport");
 const cookieSession = require("cookie-session");
-const session = require('express-session')
+// const session = require('express-session')
 var cookieParser = require('cookie-parser')
 const passportStrategy = require("./passport");
 const passportroute = require("./routes/passportroutes");
@@ -19,6 +19,9 @@ app.use(
 		name: "session",
 		keys: ["cyberwolve"],
 		maxAge: 24 * 60 * 60 * 100,
+		sameSite:false,
+		httpOnly:true,
+		secure:true
 	})
 );
 
