@@ -2,6 +2,9 @@ const materiels = require("../models/materiels");
 const fs = require("fs"); 
 
 const postMaterials = (req, res) =>{
+  if(!req.file){
+    return res.status(400).json({message:"veuillez ajouter une image"})
+  }
     const materielsimg =  materiels({
         title: req.body.title,
         price: req.body.price,
@@ -13,13 +16,14 @@ const postMaterials = (req, res) =>{
     
     materielsimg
       .save()
-      .then((res) => {
-        console.log("materiel is saved");
+      .then((response) => {
+        res.status(200).json({message:"ajouté avec succés"})
       })
       .catch((err) => {
-        console.log(err, "error has occur");
+        res.status(400).json({message:"une erreur c'est produite"})
+        
       });
-      res.send('materiel is saved')
+      
 }
 
 
@@ -39,6 +43,7 @@ const getMaterials = async(req, res) =>{
 }
 
 const updateMaterials = async(req, res) =>{
+  try{
     const canari = await materiels.findByIdAndUpdate(
         req.params.id,
         {
@@ -59,16 +64,20 @@ const updateMaterials = async(req, res) =>{
       
       )
     
-      res.status(200).json({ canari })
+      res.status(200).json({ message:"modifié avec succés" })
+    }catch(error)
+    {
+      res.status(400).json({ message:"une erreur c'est produite" })
+    }
 }
 
 const deleteMaterials = (req, res) =>{
     materiels.findByIdAndDelete(req.params.id,  function (err, docs) {
       if (!err){
-          console.log( docs);
+        res.status(200).json({ message:"supprimé avec succés" })
       }
       else{
-          console.log(err);
+        res.status(400).json({ message:"une erreur c'est produite" })
       }
    })
 }

@@ -104,7 +104,8 @@ const login = async(req,res)=>{
               res.status(200).json({
                 message: "Login successful",
                 // user2: user2,
-                accesstoken: accesstoken
+                accesstoken: accesstoken,
+                address: user2.address,
               })
               }
 
@@ -125,7 +126,8 @@ const register = async(req,res)=>{
     const user =  User({
       name: req.body.name,
       email: req.body.email,
-      password: hashedPass
+      password: hashedPass,
+      address: req.body.address
       
     });
     user

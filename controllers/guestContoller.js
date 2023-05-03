@@ -45,9 +45,19 @@ const getpaginatedmaterials = async(req,res)=>{
 const getallsearch = async(req,res)=>{
     const search = req.query.search
     
-    const data = await oiseaux.find({ "title": { "$regex": search, "$options": "x" } },).limit(5)
-  
-    res.send(data)
+    const data1 = await oiseaux.find({ "title": { "$regex": search, "$options": "x" } },).limit(5)
+    const data2 = await materiels.find({ "title": { "$regex": search, "$options": "x" } },).limit(5)
+    const returnedTarget = Object.assign(data1, data2);
+    const allDatacvrt =  data1.map((item) => {
+      return {
+        _id: item._id,
+        b64: Buffer.from(item.img.data).toString('base64'),
+        title: item.title,
+        price: item.price,
+      }
+    });
+
+    res.send(allDatacvrt)
 
 }
 

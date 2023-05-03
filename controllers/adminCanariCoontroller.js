@@ -2,6 +2,9 @@ const oiseaux = require("../models/oiseaux");
 const fs = require("fs"); 
 
 const postcanari = (req,res) =>{
+  if(!req.file){
+    return res.status(400).json({message:"veuillez ajouter une image"})
+  }
     const oiseauximage =  oiseaux({
         title: req.body.title,
         price: req.body.price,
@@ -13,13 +16,13 @@ const postcanari = (req,res) =>{
     
       oiseauximage
       .save()
-      .then((res) => {
-        console.log("image is saved");
+      .then((response) => {
+        res.status(200).json({message:"ajouté avec succés"})
       })
       .catch((err) => {
-        console.log(err, "error has occur");
+        res.status(400).json({message:"une erreur c'est produite"})
       });
-      res.send('image is saved')
+      
 }
 
 const getcanari = async(req,res) =>{
@@ -38,6 +41,7 @@ const getcanari = async(req,res) =>{
 }
 
 const updatecanari = async(req,res) =>{
+  try{
     const canari = await oiseaux.findByIdAndUpdate(
         req.params.id,
         {
@@ -58,17 +62,21 @@ const updatecanari = async(req,res) =>{
 
     )
 
-    res.status(200).json({ canari })
+    res.status(200).json({ message:"modifié avec succés" })
+  }catch(error)
+  {
+    res.status(400).json({ message:"une erreur c'est produite" })
+  }
 }
 
 
 const deletecanari = (req,res) =>{
     oiseaux.findByIdAndDelete(req.params.id,  function (err, docs) {
       if (!err){
-          console.log( docs);
+        res.status(200).json({ message:"supprimé avec succés" })
       }
       else{
-          console.log(err);
+        res.status(400).json({ message:"une erreur c'est produite" })
       }
    })
     
